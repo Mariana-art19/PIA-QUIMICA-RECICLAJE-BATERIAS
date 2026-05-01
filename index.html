@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIA de Química General — UANL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ─── RESET & ROOT ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8D28A;
+  --gold-dim:#8B6B2A;
+  --ink:#0A0C10;
+  --ink2:#12151C;
+  --ink3:#1C2030;
+  --surface:#141720;
+  --surface2:#1E2335;
+  --surface3:#252B42;
+  --border:rgba(201,168,76,0.18);
+  --border2:rgba(201,168,76,0.35);
+  --text-primary:#F0EAD6;
+  --text-secondary:#A89F8C;
+  --text-muted:#6A6358;
+  --li-color:#4FC3F7;
+  --ni-color:#81C784;
+  --co-color:#EF9A9A;
+  --radius:12px;
+  --radius-lg:20px;
+  --glow:0 0 40px rgba(201,168,76,0.12);
+  --shadow:0 24px 64px rgba(0,0,0,0.6);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--text-primary);
+  font-family:'Jost',sans-serif;
+  font-weight:300;
+  line-height:1.7;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:.5;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--ink2)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px}
+
+/* ─── HERO HEADER ─── */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:4rem 2rem;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(79,195,247,0.04) 0%, transparent 60%),
+    var(--ink);
+}
+.hero-orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+  animation:float 8s ease-in-out infinite;
+}
+.hero-orb.a{width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.07),transparent 70%);top:-200px;left:-150px}
+.hero-orb.b{width:500px;height:500px;background:radial-gradient(circle,rgba(79,195,247,0.05),transparent 70%);bottom:-150px;right:-100px;animation-delay:-4s}
+.hero-orb.c{width:400px;height:400px;background:radial-gradient(circle,rgba(239,154,154,0.04),transparent 70%);top:50%;left:60%;animation-delay:-2s}
+
+@keyframes float{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-30px) scale(1.05)}
+}
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+  background:rgba(201,168,76,0.08);
+  border:1px solid var(--border2);
+  border-radius:50px;
+  padding:.5rem 1.4rem;
+  font-size:.72rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:2.5rem;
+  animation:fadeUp .8s ease both;
+}
+.hero-badge::before{content:'◆';font-size:.55rem}
+.hero-badge::after{content:'◆';font-size:.55rem}
+
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3rem,8vw,7rem);
+  font-weight:300;
+  line-height:1.05;
+  letter-spacing:-.01em;
+  color:var(--text-primary);
+  margin-bottom:1rem;
+  animation:fadeUp .8s .15s ease both;
+}
+.hero-title em{
+  font-style:italic;
+  color:var(--gold);
+  display:block;
+}
+.hero-subtitle{
+  font-size:clamp(.85rem,2vw,1.1rem);
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  font-weight:400;
+  margin-bottom:.8rem;
+  animation:fadeUp .8s .25s ease both;
+}
+.hero-desc{
+  max-width:620px;
+  color:var(--text-secondary);
+  font-size:.95rem;
+  margin-bottom:3rem;
+  animation:fadeUp .8s .35s ease both;
+}
+.hero-divider{
+  width:80px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:0 auto 3rem;
+  animation:fadeUp .8s .3s ease both;
+}
+.hero-cta{
+  display:inline-flex;
+  align-items:center;
+  gap:.8rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  color:var(--ink);
+  font-family:'Jost',sans-serif;
+  font-size:.85rem;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-decoration:none;
+  padding:.9rem 2.2rem;
+  border-radius:50px;
+  transition:all .3s ease;
+  animation:fadeUp .8s .45s ease both;
+  cursor:pointer;
+  border:none;
+}
+.hero-cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(201,168,76,0.35);
+}
+.scroll-hint{
+  position:absolute;
+  bottom:2.5rem;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.4rem;
+  color:var(--text-muted);
+  font-size:.7rem;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  animation:bounce 2s ease-in-out infinite;
+}
+.scroll-hint svg{width:16px;height:16px;stroke:var(--gold-dim)}
+
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── MAIN LAYOUT ─── */
+main{
+  position:relative;
+  z-index:1;
+  max-width:1300px;
+  margin:0 auto;
+  padding:0 1.5rem 6rem;
+}
+
+/* ─── SECTION WRAPPER ─── */
+.section{
+  margin-bottom:5rem;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity .8s ease,transform .8s ease;
+}
+.section.visible{opacity:1;transform:translateY(0)}
+
+/* ─── SECTION HEADER ─── */
+.section-header{
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  margin-bottom:2.5rem;
+}
+.section-number{
+  font-family:'Cormorant Garamond',serif;
+  font-size:4.5rem;
+  font-weight:300;
+  color:rgba(201,168,76,0.15);
+  line-height:1;
+  flex-shrink:0;
+  user-select:none;
+}
+.section-info h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:400;
+  color:var(--text-primary);
+  line-height:1.1;
+}
+.section-info p{
+  color:var(--text-muted);
+  font-size:.82rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-top:.2rem;
+}
+.section-line{
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,var(--border2),transparent);
+  margin-left:.5rem;
+}
+
+/* ─── GLASS CARD ─── */
+.card{
+  background:linear-gradient(135deg,rgba(30,35,53,0.9),rgba(20,23,32,0.95));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  backdrop-filter:blur(20px);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,0.04);
+  transition:border-color .3s ease,box-shadow .3s ease;
+}
+.card:hover{
+  border-color:rgba(201,168,76,0.3);
+  box-shadow:var(--shadow),var(--glow);
+}
+.card-grid{
+  display:grid;
+  gap:1.5rem;
+}
+.card-grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card-grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+
+/* ─── SIMULATOR SECTION ─── */
+.sim-layout{
+  display:grid;
+  grid-template-columns:1fr 1.4fr;
+  gap:2rem;
+  align-items:start;
+}
+@media(max-width:860px){.sim-layout{grid-template-columns:1fr}}
+
+/* ─── INPUTS PANEL ─── */
+.inputs-panel{
+  background:linear-gradient(160deg,rgba(30,35,53,0.98),rgba(18,21,28,0.98));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  box-shadow:var(--shadow);
+  position:sticky;
+  top:2rem;
+}
+.inputs-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem;
+  font-weight:400;
+  color:var(--gold-light);
+  margin-bottom:.3rem;
+}
+.inputs-sub{
+  font-size:.75rem;
+  color:var(--text-muted);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:2rem;
+}
+.param-group{
+  margin-bottom:2rem;
+}
+.param-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:.8rem;
+}
+.param-name{
+  font-size:.82rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  font-weight:500;
+}
+.param-value{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.8rem;
+  font-weight:300;
+  color:var(--gold);
+  line-height:1;
+}
+.param-value span{font-size:.9rem;color:var(--text-muted);margin-left:.2rem}
+.slider-track{
+  position:relative;
+  height:6px;
+  background:rgba(255,255,255,0.06);
+  border-radius:3px;
+  margin-bottom:.5rem;
+  cursor:pointer;
+}
+.slider-fill{
+  position:absolute;
+  top:0;left:0;height:100%;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold));
+  border-radius:3px;
+  pointer-events:none;
+  transition:width .1s;
+}
+input[type=range]{
+  width:100%;
+  height:6px;
+  appearance:none;
+  background:transparent;
+  cursor:pointer;
+  position:relative;
+  z-index:1;
+}
+input[type=range]::-webkit-slider-thumb{
+  appearance:none;
+  width:20px;height:20px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  border:2px solid var(--ink);
+  box-shadow:0 2px 12px rgba(201,168,76,0.5);
+  transition:transform .2s,box-shadow .2s;
+}
+input[type=range]::-webkit-slider-thumb:hover{
+  transform:scale(1.2);
+  box-shadow:0 4px 20px rgba(201,168,76,0.7);
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  border:2px solid var(--ink);cursor:pointer;
+}
+.slider-range{
+  display:flex;justify-content:space-between;
+  font-size:.68rem;color:var(--text-muted);
+  letter-spacing:.05em;
+}
+.btn-simulate{
+  width:100%;
+  margin-top:1rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  border:none;
+  border-radius:50px;
+  color:var(--ink);
+  font-family:'Jost',sans-serif;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  padding:1rem 2rem;
+  cursor:pointer;
+  transition:all .3s ease;
+  position:relative;
+  overflow:hidden;
+}
+.btn-simulate::after{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  width:0;height:0;
+  background:rgba(255,255,255,0.2);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:width .5s,height .5s,opacity .5s;
+  opacity:0;
+}
+.btn-simulate:active::after{width:300px;height:300px;opacity:0}
+.btn-simulate:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(201,168,76,0.4);
+}
+
+/* ─── RESULTS PANEL ─── */
+.results-panel{
+  display:flex;
+  flex-direction:column;
+  gap:1.5rem;
+}
+
+/* ─── METAL INDICATOR ─── */
+.metal-card{
+  background:linear-gradient(135deg,rgba(30,35,53,0.95),rgba(18,21,28,0.98));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:1.8rem 2rem;
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  transition:all .4s ease;
+  box-shadow:var(--shadow);
+}
+.metal-card.li{border-color:rgba(79,195,247,0.3);box-shadow:0 0 30px rgba(79,195,247,0.06)}
+.metal-card.ni{border-color:rgba(129,199,132,0.3);box-shadow:0 0 30px rgba(129,199,132,0.06)}
+.metal-card.co{border-color:rgba(239,154,154,0.3);box-shadow:0 0 30px rgba(239,154,154,0.06)}
+.metal-icon{
+  width:64px;height:64px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem;font-weight:600;
+  flex-shrink:0;
+  position:relative;
+}
+.metal-icon::after{
+  content:'';
+  position:absolute;inset:-4px;
+  border-radius:50%;
+  border:1px solid currentColor;
+  opacity:.2;
+  animation:pulse-ring 2s ease-in-out infinite;
+}
+@keyframes pulse-ring{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.1);opacity:.1}}
+.metal-icon.li{background:rgba(79,195,247,0.1);color:var(--li-color)}
+.metal-icon.ni{background:rgba(129,199,132,0.1);color:var(--ni-color)}
+.metal-icon.co{background:rgba(239,154,154,0.1);color:var(--co-color)}
+.metal-info{flex:1}
+.metal-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem;font-weight:400;
+  color:var(--text-primary);
+  line-height:1;margin-bottom:.2rem;
+}
+.metal-label{
+  font-size:.72rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--text-muted);
+}
+.metal-eff{
+  text-align:right;
+}
+.eff-value{
+  font-family:'Cormorant Garamond',serif;
+  font-size:3.2rem;font-weight:300;line-height:1;
+  color:var(--gold);
+}
+.eff-label{font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase}
+
+/* ─── PROGRESS BAR ─── */
+.progress-wrap{
+  background:rgba(30,35,53,0.95);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:1.5rem 2rem;
+  box-shadow:var(--shadow);
+}
+.progress-title{
+  font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:1.2rem;
+}
+.progress-item{margin-bottom:1rem}
+.progress-head{display:flex;justify-content:space-between;margin-bottom:.5rem}
+.progress-name{font-size:.8rem;color:var(--text-secondary);font-weight:500}
+.progress-pct{font-size:.8rem;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1rem}
+.progress-bar{
+  height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:3px;
+  transition:width .8s cubic-bezier(.4,0,.2,1);
+}
+.progress-fill.li{background:linear-gradient(90deg,rgba(79,195,247,0.5),var(--li-color))}
+.progress-fill.ni{background:linear-gradient(90deg,rgba(129,199,132,0.5),var(--ni-color))}
+.progress-fill.co{background:linear-gradient(90deg,rgba(239,154,154,0.5),var(--co-color))}
+
+/* ─── CHART CARD ─── */
+.chart-card{
+  background:linear-gradient(135deg,rgba(30,35,53,0.95),rgba(18,21,28,0.98));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  box-shadow:var(--shadow);
+}
+.chart-card h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-weight:400;
+  color:var(--text-primary);margin-bottom:.3rem;
+}
+.chart-card p{font-size:.75rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem}
+.chart-wrap{position:relative;height:280px}
+
+/* ─── CONDITIONS TABLE ─── */
+.conditions-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1rem;
+}
+.cond-item{
+  background:rgba(30,35,53,0.6);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.2rem;
+  text-align:center;
+}
+.cond-val{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.4rem;font-weight:300;
+  color:var(--gold);line-height:1;margin-bottom:.2rem;
+}
+.cond-name{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+
+/* ─── PROCESS DIAGRAM ─── */
+.diagram-section{
+  margin-bottom:5rem;
+}
+.diagram-container{
+  background:linear-gradient(135deg,rgba(20,23,32,0.98),rgba(12,14,20,0.99));
+  border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  padding:3rem 2rem;
+  overflow-x:auto;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.diagram-flow{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  min-width:900px;
+  padding:1rem 0;
+  flex-wrap:nowrap;
+}
+.d-node{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  flex-shrink:0;
+}
+.d-box{
+  width:130px;
+  background:linear-gradient(145deg,rgba(37,43,66,0.95),rgba(25,28,42,0.98));
+  border:1px solid var(--border2);
+  border-radius:14px;
+  padding:1.2rem .8rem;
+  text-align:center;
+  transition:all .35s ease;
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  position:relative;
+  overflow:hidden;
+}
+.d-box::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.4;
+}
+.d-box:hover{
+  border-color:rgba(201,168,76,0.5);
+  transform:translateY(-4px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.6),0 0 24px rgba(201,168,76,0.15);
+}
+.d-box:hover::before{opacity:1}
+.d-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.d-label{
+  font-size:.7rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-secondary);
+  line-height:1.3;
+}
+.d-sublabel{
+  font-size:.62rem;color:var(--text-muted);
+  margin-top:.3rem;line-height:1.3;
+}
+.d-arrow{
+  display:flex;align-items:center;
+  flex-shrink:0;width:50px;
+}
+.d-arrow svg{width:100%;height:24px}
+.d-input{
+  position:absolute;bottom:-2.8rem;
+  display:flex;flex-direction:column;align-items:center;gap:.1rem;
+}
+.d-input-line{width:1px;height:28px;background:linear-gradient(180deg,var(--gold-dim),transparent)}
+.d-input-label{
+  font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gold-dim);white-space:nowrap;
+}
+.d-output{
+  position:absolute;top:-2.8rem;
+  display:flex;flex-direction:column;align-items:center;gap:.1rem;
+}
+.d-output-label{
+  font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-muted);white-space:nowrap;
+}
+.d-output-line{width:1px;height:28px;background:linear-gradient(0deg,var(--border2),transparent)}
+
+/* SECOND ROW */
+.diagram-row2{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  min-width:900px;
+  margin-top:5rem;
+  padding:1rem 0;
+  flex-wrap:nowrap;
+  position:relative;
+}
+.d-box.li-node{border-color:rgba(79,195,247,0.3)}
+.d-box.ni-node{border-color:rgba(129,199,132,0.3)}
+.d-box.co-node{border-color:rgba(239,154,154,0.3)}
+.d-connector{
+  width:50px;height:1px;
+  background:linear-gradient(90deg,var(--gold-dim),rgba(201,168,76,0.3));
+  flex-shrink:0;
+}
+
+/* ─── INFO CARDS ─── */
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1.5rem;
+}
+.info-card{
+  background:linear-gradient(145deg,rgba(30,35,53,0.9),rgba(18,21,28,0.95));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:2rem;
+  box-shadow:var(--shadow);
+  transition:all .3s ease;
+}
+.info-card:hover{
+  border-color:var(--border2);
+  box-shadow:var(--shadow),var(--glow);
+  transform:translateY(-3px);
+}
+.info-card-icon{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:1.2rem;
+}
+.info-card-icon.gold{background:rgba(201,168,76,0.1);color:var(--gold)}
+.info-card-icon.blue{background:rgba(79,195,247,0.1);color:var(--li-color)}
+.info-card-icon.green{background:rgba(129,199,132,0.1);color:var(--ni-color)}
+.info-card-icon.red{background:rgba(239,154,154,0.1);color:var(--co-color)}
+.info-card h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;font-weight:400;
+  color:var(--text-primary);margin-bottom:.6rem;
+}
+.info-card p{font-size:.875rem;color:var(--text-secondary);line-height:1.7}
+.info-card .tag{
+  display:inline-block;
+  margin-top:1rem;
+  padding:.25rem .75rem;
+  background:rgba(201,168,76,0.08);
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gold-dim);
+}
+
+/* ─── STATS BAR ─── */
+.stats-bar{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  margin-bottom:3rem;
+}
+.stat-item{
+  background:rgba(18,21,28,0.98);
+  padding:2rem 1.5rem;
+  text-align:center;
+}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.8rem;font-weight:300;
+  color:var(--gold);line-height:1;margin-bottom:.3rem;
+}
+.stat-lbl{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)}
+
+/* ─── PHOTO SECTION ─── */
+.photo-section{
+  background:linear-gradient(135deg,rgba(20,23,32,0.98),rgba(12,14,20,0.99));
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+/* ─── STATIC DIAGRAM IMAGE ─── */
+.photo-static-area{
+  margin:2rem;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  border:1px solid var(--border2);
+  background:rgba(0,0,0,0.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:260px;
+}
+.photo-static-area img#dwsim-img{
+  width:100%;
+  max-height:520px;
+  object-fit:contain;
+  display:block;
+  border-radius:var(--radius-lg);
+  padding:.5rem;
+  transition:transform .4s ease,box-shadow .4s ease;
+}
+.photo-static-area img#dwsim-img:hover{
+  transform:scale(1.015);
+  box-shadow:0 16px 48px rgba(0,0,0,0.6),0 0 32px rgba(201,168,76,0.12);
+}
+/* fallback cuando la imagen no carga */
+.photo-static-area img#dwsim-img[src="diagrama.png"]:not([complete]),
+.photo-static-area img#dwsim-img[src=""]{
+  min-height:200px;
+}
+
+.photo-upload-area{
+  min-height:320px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  border:2px dashed rgba(201,168,76,0.2);
+  border-radius:var(--radius-lg);
+  margin:2rem;
+  cursor:pointer;
+  transition:all .3s ease;
+  position:relative;
+  overflow:hidden;
+  background:rgba(201,168,76,0.02);
+}
+.photo-upload-area:hover{
+  border-color:rgba(201,168,76,0.4);
+  background:rgba(201,168,76,0.04);
+}
+.photo-upload-area input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;
+}
+.upload-icon{font-size:3rem;margin-bottom:1rem;color:var(--gold-dim)}
+.upload-text{font-size:.9rem;color:var(--text-secondary);text-align:center}
+.upload-sub{font-size:.72rem;color:var(--text-muted);margin-top:.4rem}
+#dwsim-preview{
+  width:100%;height:100%;
+  object-fit:contain;
+  border-radius:var(--radius-lg);
+  display:none;
+  padding:.5rem;
+}
+.photo-info{padding:2rem}
+.photo-info h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.5rem;font-weight:400;
+  color:var(--gold-light);margin-bottom:.8rem;
+}
+.photo-info p{font-size:.9rem;color:var(--text-secondary);line-height:1.8}
+.dwsim-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(201,168,76,0.08);border:1px solid var(--border);
+  border-radius:8px;padding:.5rem 1rem;margin-top:1rem;
+  font-size:.75rem;letter-spacing:.08em;color:var(--gold-dim);
+}
+
+/* ─── METHODOLOGY CARDS ─── */
+.method-timeline{
+  position:relative;
+  padding-left:2.5rem;
+}
+.method-timeline::before{
+  content:'';
+  position:absolute;left:.75rem;top:0;bottom:0;
+  width:1px;background:linear-gradient(180deg,var(--gold),rgba(201,168,76,0.1));
+}
+.method-step{
+  position:relative;
+  margin-bottom:2.5rem;
+}
+.method-step::before{
+  content:attr(data-n);
+  position:absolute;left:-2.5rem;
+  width:1.5rem;height:1.5rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold-dim));
+  color:var(--ink);
+  font-size:.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+  top:.1rem;
+}
+.method-step h4{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;font-weight:400;color:var(--text-primary);
+  margin-bottom:.4rem;
+}
+.method-step p{font-size:.875rem;color:var(--text-secondary);line-height:1.7}
+.method-detail{
+  margin-top:.5rem;
+  padding:.6rem 1rem;
+  background:rgba(201,168,76,0.05);
+  border-left:2px solid var(--gold-dim);
+  border-radius:0 8px 8px 0;
+  font-size:.78rem;color:var(--text-muted);
+  font-style:italic;
+}
+
+/* ─── FOOTER ─── */
+footer{
+  border-top:1px solid var(--border);
+  padding:3rem 1.5rem;
+  text-align:center;
+  position:relative;
+  z-index:1;
+}
+.footer-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem;font-weight:300;
+  color:var(--gold);letter-spacing:.05em;
+  margin-bottom:.8rem;
+}
+.footer-info{font-size:.78rem;color:var(--text-muted);line-height:1.9}
+.footer-divider{
+  width:60px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:.8rem auto;
+}
+.footer-team{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;
+  margin-top:1rem;
+}
+.team-tag{
+  padding:.25rem .8rem;
+  background:rgba(201,168,76,0.06);
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:.68rem;letter-spacing:.08em;color:var(--text-muted);
+}
+
+/* ─── TOOLTIP ─── */
+.tooltip{
+  position:fixed;
+  background:rgba(20,23,32,0.95);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:.8rem 1.2rem;
+  font-size:.78rem;
+  color:var(--text-secondary);
+  pointer-events:none;
+  z-index:9999;
+  max-width:220px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  opacity:0;
+  transition:opacity .2s;
+}
+.tooltip.show{opacity:1}
+
+/* ─── PH SCALE ─── */
+.ph-scale{
+  display:flex;gap:2px;
+  height:12px;border-radius:6px;overflow:hidden;margin:1rem 0;
+}
+.ph-seg{flex:1;transition:opacity .3s}
+.ph-active{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ─── ALERT ─── */
+.alert{
+  display:none;
+  background:rgba(239,154,154,0.08);
+  border:1px solid rgba(239,154,154,0.25);
+  border-radius:10px;
+  padding:.8rem 1.2rem;
+  font-size:.8rem;color:#EF9A9A;
+  margin-bottom:1rem;
+  align-items:center;gap:.6rem;
+}
+.alert.show{display:flex}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:640px){
+  .hero-title{font-size:2.8rem}
+  .section-number{font-size:3rem}
+  .eff-value{font-size:2.4rem}
+  .diagram-container{padding:2rem 1rem}
+  .stat-num{font-size:2rem}
+  .inputs-panel{position:static}
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes shimmer{
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+.shimmer{
+  background:linear-gradient(90deg,var(--text-muted) 0%,var(--gold-light) 50%,var(--text-muted) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 4s linear infinite;
+}
+
+/* pH color gradient scale */
+.ph-color-1{background:#e74c3c}
+.ph-color-2{background:#e67e22}
+.ph-color-3{background:#f39c12}
+.ph-color-4{background:#f1c40f}
+.ph-color-5{background:#d4e157}
+.ph-color-6{background:#66bb6a}
+.ph-color-7{background:#26c6da}
+.ph-color-8{background:#42a5f5}
+.ph-color-9{background:#5c6bc0}
+.ph-color-10{background:#7e57c2}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-orb a"></div>
+  <div class="hero-orb b"></div>
+  <div class="hero-orb c"></div>
+  <div class="hero-badge">Universidad Autónoma de Nuevo León </div>
+
+<div class="hero-badge">FACULTAD DE INGENIERIA MECANICA Y ELECTRICA </div>
+  <h1 class="hero-title">PIA de<br><em>Química General</em></h1>
+  <p class="hero-subtitle">Simulador de Reciclaje Químico de Baterías de Ion-Litio</p>
+  <div class="hero-divider"></div>
+  <p class="hero-desc">Un modelo conceptual interactivo que representa el proceso hidrometalúrgico para la recuperación de metales estratégicos — desarrollado con enfoque en Nuevo León.</p>
+  <a class="hero-cta" href="#simulador">Iniciar Simulación ↓</a>
+  <div class="scroll-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    desplazar
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar section" id="s0">
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-lbl">Metales recuperados</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">98%</div>
+      <div class="stat-lbl">Eficiencia máx. teórica</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-lbl">Etapas del proceso</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">NL</div>
+      <div class="stat-lbl">Enfoque regional</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 — SIMULADOR -->
+  <section class="section" id="simulador">
+    <div class="section-header">
+      <div class="section-number">01</div>
+      <div class="section-info">
+        <h2>Simulador Interactivo</h2>
+        <p>Modelo de recuperación hidrometalúrgica</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="sim-layout">
+      <!-- INPUTS -->
+      <div class="inputs-panel">
+        <div class="inputs-title">Parámetros de Proceso</div>
+        <div class="inputs-sub">Ajusta las variables de lixiviación</div>
+
+        <div class="alert" id="ph-alert">
+          ⚠️ pH fuera de rango, ajustado automáticamente.
+        </div>
+
+        <!-- pH -->
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">pH del ácido lixiviante</span>
+            <div class="param-value"><span id="ph-display">4.0</span><span></span></div>
+          </div>
+          <div class="ph-scale" id="ph-scale"></div>
+          <input type="range" id="ph-slider" min="1" max="10" step="0.1" value="4">
+          <div class="slider-range"><span>1 (ácido fuerte)</span><span>10 (alcalino)</span></div>
+        </div>
+
+        <!-- Temperatura -->
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">Temperatura</span>
+            <div class="param-value"><span id="temp-display">60</span><span>°C</span></div>
+          </div>
+          <div style="position:relative">
+            <div class="slider-track">
+              <div class="slider-fill" id="temp-fill" style="width:50%"></div>
+            </div>
+          </div>
+          <input type="range" id="temp-slider" min="20" max="120" step="1" value="60"
+                 style="margin-top:-11px">
+          <div class="slider-range"><span>20°C</span><span>120°C</span></div>
+        </div>
+
+        <!-- Tiempo -->
+        <div class="param-group">
+          <div class="param-label">
+            <span class="param-name">Tiempo de reacción</span>
+            <div class="param-value"><span id="time-display">3.0</span><span>h</span></div>
+          </div>
+          <div style="position:relative">
+            <div class="slider-track">
+              <div class="slider-fill" id="time-fill" style="width:20%"></div>
+            </div>
+          </div>
+          <input type="range" id="time-slider" min="0.5" max="10" step="0.5" value="3"
+                 style="margin-top:-11px">
+          <div class="slider-range"><span>0.5 h</span><span>10 h</span></div>
+        </div>
+
+        <button class="btn-simulate" id="btn-sim" onclick="runSimulation()">▶ Ejecutar Simulación</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="results-panel">
+
+        <!-- Metal card -->
+        <div class="metal-card" id="metal-card">
+          <div class="metal-icon li" id="metal-icon">Li</div>
+          <div class="metal-info">
+            <div class="metal-name" id="metal-name">Litio</div>
+            <div class="metal-label" id="metal-label">Metal principal recuperado · pH &lt; 4</div>
+          </div>
+          <div class="metal-eff">
+            <div class="eff-value" id="eff-display">–</div>
+            <div class="eff-label">eficiencia</div>
+          </div>
+        </div>
+
+        <!-- Conditions -->
+        <div class="card">
+          <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem">Condiciones actuales</div>
+          <div class="conditions-grid" id="conditions-grid">
+            <div class="cond-item">
+              <div class="cond-val" id="c-ph">4.0</div>
+              <div class="cond-name">pH</div>
+            </div>
+            <div class="cond-item">
+              <div class="cond-val" id="c-temp">60°C</div>
+              <div class="cond-name">Temperatura</div>
+            </div>
+            <div class="cond-item">
+              <div class="cond-val" id="c-time">3h</div>
+              <div class="cond-name">Tiempo</div>
+            </div>
+            <div class="cond-item">
+              <div class="cond-val" id="c-eff">–</div>
+              <div class="cond-name">Eficiencia</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress per metal -->
+        <div class="progress-wrap">
+          <div class="progress-title">Recuperación estimada por metal</div>
+          <div class="progress-item">
+            <div class="progress-head">
+              <span class="progress-name">Litio (Li)</span>
+              <span class="progress-pct" id="li-pct">–</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill li" id="li-bar" style="width:0%"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-head">
+              <span class="progress-name">Níquel (Ni)</span>
+              <span class="progress-pct" id="ni-pct">–</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill ni" id="ni-bar" style="width:0%"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-head">
+              <span class="progress-name">Cobalto (Co)</span>
+              <span class="progress-pct" id="co-pct">–</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill co" id="co-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-card">
+          <h3>Curva de Eficiencia vs. pH</h3>
+          <p>Comportamiento del proceso en todo el espectro de pH</p>
+          <div class="chart-wrap">
+            <canvas id="eff-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Second chart: temp vs eff -->
+        <div class="chart-card">
+          <h3>Eficiencia vs. Temperatura</h3>
+          <p>A pH y tiempo fijos — influencia de la temperatura</p>
+          <div class="chart-wrap">
+            <canvas id="temp-chart"></canvas>
+          </div>
+        </div>
+
+      </div><!-- /results-panel -->
+    </div><!-- /sim-layout -->
+  </section>
+
+  <!-- SECTION 2 — DIAGRAM -->
+  <section class="section" id="diagrama">
+    <div class="section-header">
+      <div class="section-number">02</div>
+      <div class="section-info">
+        <h2>Diagrama de Proceso</h2>
+        <p>Flujo hidrometalúrgico de reciclaje</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="diagram-container">
+      <!-- ROW 1: Main process -->
+      <div class="diagram-flow" id="main-flow">
+
+        <!-- Batería Entrada -->
+        <div class="d-node" data-tip="Batería usada de ion-litio: contiene Li, Co, Ni, Mn, Cu, Al. Debe descargarse antes del proceso.">
+          <div class="d-box">
+            <span class="d-icon">🔋</span>
+            <div class="d-label">Batería<br>Entrada</div>
+            <div class="d-sublabel">Li-ion usada</div>
+          </div>
+        </div>
+
+        <div class="d-arrow">
+          <svg viewBox="0 0 50 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="12" x2="42" y2="12" stroke="#C9A84C" stroke-width="1.5"/>
+            <polyline points="36,6 44,12 36,18" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Pretratamiento -->
+        <div class="d-node" data-tip="Descarga completa, desmontaje mecánico y separación de componentes de la celda.">
+          <div class="d-box">
+            <span class="d-icon">⚙️</span>
+            <div class="d-label">Pretrata-<br>miento</div>
+            <div class="d-sublabel">Descarga y desmontaje</div>
+          </div>
+        </div>
+
+        <div class="d-arrow">
+          <svg viewBox="0 0 50 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="12" x2="42" y2="12" stroke="#C9A84C" stroke-width="1.5"/>
+            <polyline points="36,6 44,12 36,18" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Lixiviación -->
+        <div class="d-node" data-tip="Los metales pasan a solución acuosa mediante ácido lixiviante (H₂SO₄ o HCl). El pH controla qué metal se disuelve preferentemente.">
+          <div class="d-box" style="border-color:rgba(201,168,76,0.5)">
+            <span class="d-icon">⚗️</span>
+            <div class="d-label">Lixiviación</div>
+            <div class="d-sublabel">Disolución ácida</div>
+          </div>
+          <div class="d-input">
+            <div class="d-input-label">Ácido Lixiviante</div>
+            <div class="d-input-line"></div>
+          </div>
+        </div>
+
+        <div class="d-arrow">
+          <svg viewBox="0 0 50 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="12" x2="42" y2="12" stroke="#C9A84C" stroke-width="1.5"/>
+            <polyline points="36,6 44,12 36,18" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Separación S/L -->
+        <div class="d-node" data-tip="Filtración que separa el residuo sólido (carcasa, plásticos) de la solución de metales disueltos.">
+          <div class="d-box">
+            <span class="d-icon">🔽</span>
+            <div class="d-label">Separación<br>S/L</div>
+            <div class="d-sublabel">Filtración</div>
+          </div>
+          <div class="d-output">
+            <div class="d-output-line"></div>
+            <div class="d-output-label">Residuo Sólido</div>
+          </div>
+        </div>
+
+        <div class="d-arrow">
+          <svg viewBox="0 0 50 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="12" x2="42" y2="12" stroke="#C9A84C" stroke-width="1.5"/>
+            <polyline points="36,6 44,12 36,18" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Solución Metales -->
+        <div class="d-node" data-tip="Solución acuosa con Li⁺, Ni²⁺, Co²⁺ disueltos, lista para la etapa de separación y purificación.">
+          <div class="d-box">
+            <span class="d-icon">🧪</span>
+            <div class="d-label">Solución<br>de Metales</div>
+            <div class="d-sublabel">Li, Ni, Co disueltos</div>
+          </div>
+        </div>
+
+      </div><!-- /diagram-flow -->
+
+      <!-- ROW 2: Separation -->
+      <div class="diagram-row2">
+
+        <!-- Recuperación Li -->
+        <div class="d-node" data-tip="Precipitación selectiva con Na₂CO₃. El litio precipita como Li₂CO₃ con recuperación >84%.">
+          <div class="d-box li-node">
+            <span class="d-icon">🔵</span>
+            <div class="d-label">Recuperación<br>Litio</div>
+            <div class="d-sublabel">Precipitación</div>
+          </div>
+          <div class="d-output">
+            <div class="d-output-line"></div>
+            <div class="d-output-label" style="color:var(--li-color)">Li₂CO₃ puro</div>
+          </div>
+        </div>
+
+        <div class="d-connector"></div>
+
+        <!-- Separación Co/Ni -->
+        <div class="d-node" data-tip="Extracción con solventes (D2EHPA, Cyanex 272) y precipitación escalonada para separar Co²⁺ de Ni²⁺.">
+          <div class="d-box">
+            <span class="d-icon">⚖️</span>
+            <div class="d-label">Separación<br>Co / Ni</div>
+            <div class="d-sublabel">Extracción solvente</div>
+          </div>
+        </div>
+
+        <div class="d-connector"></div>
+
+        <!-- Cobalto -->
+        <div class="d-node" data-tip="Cobalto recuperado como sal de alta pureza (CoSO₄). Utilizado en nuevas celdas de batería.">
+          <div class="d-box co-node">
+            <span class="d-icon">🔴</span>
+            <div class="d-label">Cobalto<br>(Co)</div>
+            <div class="d-sublabel">Sal de alta pureza</div>
+          </div>
+          <div class="d-output">
+            <div class="d-output-line"></div>
+            <div class="d-output-label" style="color:var(--co-color)">Producto Co</div>
+          </div>
+        </div>
+
+        <div class="d-connector"></div>
+
+        <!-- Níquel -->
+        <div class="d-node" data-tip="Níquel recuperado como NiCO₃ con ~99% de eficiencia. Regresa al ciclo de manufactura.">
+          <div class="d-box ni-node">
+            <span class="d-icon">🟢</span>
+            <div class="d-label">Níquel<br>(Ni)</div>
+            <div class="d-sublabel">Carbonato de Ni</div>
+          </div>
+          <div class="d-output">
+            <div class="d-output-line"></div>
+            <div class="d-output-label" style="color:var(--ni-color)">Producto Ni</div>
+          </div>
+        </div>
+
+      </div><!-- /diagram-row2 -->
+
+      <div style="margin-top:4.5rem;display:flex;gap:.8rem;flex-wrap:wrap">
+        <span style="font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">
+          ◆ Pasa el cursor sobre cada bloque para ver detalles
+        </span>
+        <span style="font-size:.68rem;color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase">
+          · Diagrama basado en el proceso DWSIM implementado
+        </span>
+      </div>
+    </div><!-- /diagram-container -->
+  </section>
+
+  <!-- SECTION 3 — INFO -->
+  <section class="section" id="informacion">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <div class="section-info">
+        <h2>Marco del Proyecto</h2>
+        <p>Contexto científico y regional</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="info-grid" style="margin-bottom:2rem">
+      <div class="info-card">
+        <div class="info-card-icon gold">♻️</div>
+        <h3>Proceso Hidrometalúrgico</h3>
+        <p>Ruta de reciclaje química que opera en solución acuosa. Ofrece mayor pureza de productos y menor consumo energético que la pirometalurgia, con recuperación superior al 98% para Ni y Co.</p>
+        <span class="tag">Método principal</span>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon blue">🔬</div>
+        <h3>Litio (Li)</h3>
+        <p>Se disuelve preferentemente en condiciones de pH bajo (&lt;4) con agua caliente. Recuperado como Li₂CO₃ con eficiencia documentada superior al 84%. Metal crítico para celdas de próxima generación.</p>
+        <span class="tag">pH &lt; 4.0</span>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon green">🧲</div>
+        <h3>Níquel (Ni)</h3>
+        <p>Recuperado mediante precipitación como carbonato. Presente en cátodos NMC y NCA. Separado de cobalto por diferencia de potencial de precipitación. ~99% de recuperación.</p>
+        <span class="tag">pH 4.0 – 6.0</span>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon red">⚡</div>
+        <h3>Cobalto (Co)</h3>
+        <p>Separado mediante extracción con solventes orgánicos (Cyanex 272, D2EHPA). Recuperado como CoSO₄ de alta pureza. Metal de mayor valor económico en la cadena de reciclaje.</p>
+        <span class="tag">pH &gt; 6.0</span>
+      </div>
+    </div>
+
+    <!-- Nuevo León context -->
+    <div class="card" style="margin-top:1.5rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+        <div>
+          <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">📍 Contexto — Nuevo León</div>
+          <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.9">
+            En <strong style="color:var(--text-primary)">Nuevo León</strong>, la problemática del reciclaje de baterías se intensifica por su alta actividad industrial y crecimiento urbano acelerado. Actualmente las acciones se centran en campañas de recolección doméstica y gestión industrial mediante empresas privadas en municipios como García. Sin embargo, <em>no existen programas locales específicos de reciclaje químico</em>, lo que representa una oportunidad para proyectos académicos y tecnológicos como éste.
+          </p>
+          <br>
+          <p style="font-size:.9rem;color:var(--text-secondary);line-height:1.9">
+            La <strong style="color:var(--text-primary)">UANL</strong> impulsa campañas de reciclaje electrónico en la comunidad universitaria, y este proyecto conceptual busca ser una herramienta didáctica que fomente la conciencia ambiental en instituciones de nivel superior.
+          </p>
+        </div>
+        <div>
+          <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">🌍 Vinculación ODS</div>
+          <div style="display:flex;flex-direction:column;gap:.7rem">
+            <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem">
+              <div style="font-size:.75rem;font-weight:600;color:var(--text-primary);margin-bottom:.2rem">ODS 12 — Producción y consumo responsables</div>
+              <div style="font-size:.78rem;color:var(--text-muted)">Recuperar materiales reduce la extracción minera primaria y cierra el ciclo de vida del producto.</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem">
+              <div style="font-size:.75rem;font-weight:600;color:var(--text-primary);margin-bottom:.2rem">ODS 13 — Acción por el clima</div>
+              <div style="font-size:.78rem;color:var(--text-muted)">Menor extracción y menor disposición inadecuada reduce emisiones y contaminación de suelo y agua.</div>
+            </div>
+            <div style="background:rgba(201,168,76,0.06);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem">
+              <div style="font-size:.75rem;font-weight:600;color:var(--text-primary);margin-bottom:.2rem">ODS 9 — Industria e innovación</div>
+              <div style="font-size:.78rem;color:var(--text-muted)">Propuesta tecnológica adaptada al contexto local con proyección industrial a mediano plazo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — METHODOLOGY -->
+  <section class="section" id="metodologia">
+    <div class="section-header">
+      <div class="section-number">04</div>
+      <div class="section-info">
+        <h2>Metodología del Proceso</h2>
+        <p>Etapas del reciclaje hidrometalúrgico</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+      <div class="card">
+        <div class="method-timeline">
+          <div class="method-step" data-n="1">
+            <h4>Pretratamiento y descarga</h4>
+            <p>Las baterías se descargan completamente para eliminar riesgos eléctricos, luego se desmantelan mecánicamente separando carcasa, electrodos y electrolito.</p>
+            <div class="method-detail">Temperatura ambiente · Sin reactivos químicos en esta etapa</div>
+          </div>
+          <div class="method-step" data-n="2">
+            <h4>Lixiviación ácida</h4>
+            <p>Los materiales activos del cátodo se disuelven en ácido clorhídrico (HCl) o sulfúrico (H₂SO₄). El pH controla selectivamente qué metales pasan a solución. La temperatura y el tiempo determinan la eficiencia de extracción.</p>
+            <div class="method-detail">60–80°C · 2–4 horas · pH 1–3 para máxima extracción</div>
+          </div>
+          <div class="method-step" data-n="3">
+            <h4>Separación sólido-líquido</h4>
+            <p>Filtración de la pulpa para separar el residuo sólido inerte (grafito, plásticos, Cu, Al) de la solución rica en metales disueltos.</p>
+            <div class="method-detail">Filtración al vacío · Lavado del pastel sólido</div>
+          </div>
+          <div class="method-step" data-n="4">
+            <h4>Recuperación selectiva de metales</h4>
+            <p>El litio precipita como Li₂CO₃ con Na₂CO₃. Níquel y cobalto se separan mediante extracción con solventes (D2EHPA, Cyanex 272) y precipitación escalonada controlando el pH.</p>
+            <div class="method-detail">Li &gt;84% · Ni ~99% · Co alta pureza como CoSO₄</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1.2rem">
+        <div class="card">
+          <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Ventajas del método hidrometalúrgico</div>
+          <div style="display:flex;flex-direction:column;gap:.6rem">
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <span style="color:var(--gold);margin-top:.1rem">◆</span>
+              <p style="font-size:.875rem;color:var(--text-secondary)">Menor consumo de energía frente a la pirometalurgia (sin fusión a &gt;1000°C)</p>
+            </div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <span style="color:var(--gold);margin-top:.1rem">◆</span>
+              <p style="font-size:.875rem;color:var(--text-secondary)">Alta pureza de los productos recuperados, listos para re-manufactura</p>
+            </div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <span style="color:var(--gold);margin-top:.1rem">◆</span>
+              <p style="font-size:.875rem;color:var(--text-secondary)">Permite separar metales de forma selectiva controlando el pH</p>
+            </div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <span style="color:var(--gold);margin-top:.1rem">◆</span>
+              <p style="font-size:.875rem;color:var(--text-secondary)">Aplicable a escala laboratorio con equipamiento accesible</p>
+            </div>
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <span style="color:var(--gold);margin-top:.1rem">◆</span>
+              <p style="font-size:.875rem;color:var(--text-secondary)">Favorece economía circular al reintroducir materiales en la cadena de valor</p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Variables críticas del proceso</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+            <div style="text-align:center;padding:1rem;background:rgba(201,168,76,0.04);border:1px solid var(--border);border-radius:10px">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold)">pH</div>
+              <div style="font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">Selectividad</div>
+            </div>
+            <div style="text-align:center;padding:1rem;background:rgba(201,168,76,0.04);border:1px solid var(--border);border-radius:10px">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold)">T°</div>
+              <div style="font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">Cinética</div>
+            </div>
+            <div style="text-align:center;padding:1rem;background:rgba(201,168,76,0.04);border:1px solid var(--border);border-radius:10px">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold)">t</div>
+              <div style="font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">Conversión</div>
+            </div>
+            <div style="text-align:center;padding:1rem;background:rgba(201,168,76,0.04);border:1px solid var(--border);border-radius:10px">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold)">[C]</div>
+              <div style="font-size:.68rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase">Concentración</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — DWSIM PHOTO -->
+  <section class="section" id="dwsim">
+    <div class="section-header">
+      <div class="section-number">05</div>
+      <div class="section-info">
+        <h2>Diagrama en DWSIM</h2>
+        <p>Simulación con software profesional de quimica</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="photo-section">
+      <div class="photo-static-area">
+        <!--
+          ╔══════════════════════════════════════════════════════════╗
+          ║  INSTRUCCIÓN: cambia el atributo src de la línea        ║
+          ║  siguiente por la ruta o nombre de tu imagen.           ║
+          ║  Ejemplos:                                              ║
+          ║    src="diagrama.png"          (misma carpeta)          ║
+          ║    src="img/diagrama.png"      (subcarpeta img/)        ║
+          ║    src="C:/Users/.../foto.png" (ruta absoluta Windows)  ║
+          ╚══════════════════════════════════════════════════════════╝
+        -->
+        <img
+          src="diagrama.png"
+          alt="Diagrama de flujo del proceso de reciclaje de baterías en DWSIM"
+          id="dwsim-img"
+        >
+      </div>
+
+      <div class="photo-info">
+        <h3>¿Qué es DWSIM?</h3>
+        <p>
+          <strong>DWSIM</strong> (Dynamic Water and Steam Interface Modeler, ahora renombrado como simulador de procesos de código abierto) es un software profesional de simulación de procesos químicos desarrollado bajo la plataforma .NET. Permite diseñar, simular y analizar diagramas de flujo de proceso (<em>PFD</em>) en estado estacionario y dinámico, aplicando modelos termodinámicos rigurosos para corrientes de material y energía.
+        </p>
+        <br>
+        <p>
+          En el contexto de este proyecto, DWSIM fue utilizado para construir el <strong>diagrama de flujo del proceso de reciclaje químico de baterías de ion-litio</strong>. El flujo modela las etapas de lixiviación, separación sólido-líquido y recuperación de metales (Li, Co, Ni), conectando operaciones unitarias como reactores, separadores y divisores de corriente, con entradas de batería y ácido lixiviante y salidas de productos metálicos purificados.
+        </p>
+        <div class="dwsim-badge">
+          🖥️ Software: DWSIM Pro · Modo estacionario · Proceso hidrometalúrgico
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 — REFERENCES -->
+  <section class="section" id="referencias">
+    <div class="section-header">
+      <div class="section-number">06</div>
+      <div class="section-info">
+        <h2>Bibliografía</h2>
+        <p>Fuentes de investigación del proyecto</p>
+      </div>
+      <div class="section-line"></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">Gaines, L. (2018).</strong> Lithium-ion battery recycling processes. <em>Sustainable Materials and Technologies.</em></p>
+        </div>
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">Harper, G., et al. (2019).</strong> Recycling lithium-ion batteries from electric vehicles. <em>Nature.</em></p>
+        </div>
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">Organización de las Naciones Unidas (2015).</strong> Objetivos de Desarrollo Sostenible. <em>ONU.</em></p>
+        </div>
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">SEMARNAT (2022).</strong> Diagnóstico básico para la gestión integral de los residuos en México. <em>Gobierno de México.</em></p>
+        </div>
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">Gobierno del Estado de Nuevo León (2023).</strong> Programa estatal de manejo de residuos. <em>Secretaría de Medio Ambiente de Nuevo León.</em></p>
+        </div>
+        <div style="padding:1rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem">
+          <p style="font-size:.875rem;color:var(--text-secondary);line-height:1.7"><strong style="color:var(--text-primary)">UANL (2023).</strong> Campañas de reciclaje electrónico. <em>Universidad Autónoma de Nuevo León.</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div style="max-width:1300px;margin:0 auto">
+    <div class="footer-logo">PIA · Química General</div>
+    <div class="footer-divider"></div>
+    <div class="footer-info">
+      Universidad Autónoma de Nuevo León<br>
+      Facultad de Ingeniería Mecánica y Eléctrica<br>
+      Unidad de Aprendizaje: Química General · Grupo 026<br>
+      Docente: Ing. Diana Garza Rocha<br>
+      San Nicolás de los Garza, N.L., México · 2026
+    </div>
+    <div class="footer-team">
+      <span class="team-tag">Mariana Aquino Rubio</span>
+      <span class="team-tag">Miguel Guevara Echazarreta</span>
+      <span class="team-tag">Ileana Tenorio Verdinez</span>
+      <span class="team-tag">Esther Bustillos Nevarez</span>
+      <span class="team-tag">Javier De Leon De La Peña</span>
+      <span class="team-tag">Avner Rosales Avila</span>
+    </div>
+    <div style="margin-top:1.5rem;font-size:.68rem;color:var(--text-muted);letter-spacing:.1em">Equipo Protones · 2026</div>
+  </div>
+</footer>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ────── pH SCALE ────── */
+const phScale = document.getElementById('ph-scale');
+const phColors = ['#e74c3c','#e67e22','#f39c12','#f1c40f','#d4e157','#66bb6a','#26c6da','#42a5f5','#5c6bc0','#7e57c2'];
+phColors.forEach((c,i)=>{
+  const seg = document.createElement('div');
+  seg.className='ph-seg';
+  seg.style.background=c;
+  seg.style.flex='1';
+  seg.style.borderRadius='2px';
+  phScale.appendChild(seg);
+});
+function updatePhScale(val){
+  const segs = phScale.querySelectorAll('.ph-seg');
+  const idx = Math.round(val)-1;
+  segs.forEach((s,i)=>{
+    s.style.opacity = i===idx ? '1' : '0.28';
+    s.style.transform = i===idx ? 'scaleY(1.4)' : 'scaleY(1)';
+    s.style.transition = 'all .3s ease';
+  });
+}
+updatePhScale(4);
+
+/* ────── SLIDER WIRING ────── */
+const phSlider   = document.getElementById('ph-slider');
+const tempSlider = document.getElementById('temp-slider');
+const timeSlider = document.getElementById('time-slider');
+const tempFill   = document.getElementById('temp-fill');
+const timeFill   = document.getElementById('time-fill');
+
+phSlider.addEventListener('input',e=>{
+  const v=parseFloat(e.target.value);
+  document.getElementById('ph-display').textContent=v.toFixed(1);
+  document.getElementById('c-ph').textContent=v.toFixed(1);
+  updatePhScale(v);
+  liveUpdate();
+});
+tempSlider.addEventListener('input',e=>{
+  const v=parseInt(e.target.value);
+  document.getElementById('temp-display').textContent=v;
+  document.getElementById('c-temp').textContent=v+'°C';
+  const pct=((v-20)/(120-20))*100;
+  tempFill.style.width=pct+'%';
+  liveUpdate();
+});
+timeSlider.addEventListener('input',e=>{
+  const v=parseFloat(e.target.value);
+  document.getElementById('time-display').textContent=v.toFixed(1);
+  document.getElementById('c-time').textContent=v.toFixed(1)+'h';
+  const pct=((v-0.5)/(10-0.5))*100;
+  timeFill.style.width=pct+'%';
+  liveUpdate();
+});
+
+/* ────── SIMULATION LOGIC ────── */
+function calcEff(pH, temp, time){
+  let e = (temp*0.4)+(time*12)-Math.abs(pH-5)*3;
+  return Math.max(0,Math.min(100,e));
+}
+function getMetalInfo(pH){
+  if(pH<4) return {name:'Litio',symbol:'Li',cls:'li',label:'Metal principal · pH óptimo &lt; 4.0'};
+  if(pH<=6) return {name:'Níquel',symbol:'Ni',cls:'ni',label:'Metal principal · pH 4.0 – 6.0'};
+  return {name:'Cobalto',symbol:'Co',cls:'co',label:'Metal principal · pH &gt; 6.0'};
+}
+function runSimulation(){
+  let pH   = parseFloat(phSlider.value);
+  const temp = parseFloat(tempSlider.value);
+  const time = parseFloat(timeSlider.value);
+  // Validation
+  const alert_ = document.getElementById('ph-alert');
+  if(pH<1||pH>10){
+    pH=Math.max(1,Math.min(10,pH));
+    alert_.classList.add('show');
+    setTimeout(()=>alert_.classList.remove('show'),3000);
+  }
+  const eff = calcEff(pH,temp,time);
+  const m   = getMetalInfo(pH);
+  // Metal card
+  const card = document.getElementById('metal-card');
+  card.className='metal-card '+m.cls;
+  document.getElementById('metal-icon').className='metal-icon '+m.cls;
+  document.getElementById('metal-icon').textContent=m.symbol;
+  document.getElementById('metal-name').textContent=m.name;
+  document.getElementById('metal-label').innerHTML=m.label;
+  document.getElementById('eff-display').textContent=eff.toFixed(1)+'%';
+  document.getElementById('c-eff').textContent=eff.toFixed(1)+'%';
+  // Per-metal recovery (simplified model)
+  const liEff  = pH<4 ? eff : Math.max(0,eff-15);
+  const niEff  = (pH>=4&&pH<=6) ? eff : Math.max(0,eff-20);
+  const coEff  = pH>6 ? eff : Math.max(0,eff-25);
+  setProgress('li',liEff);
+  setProgress('ni',niEff);
+  setProgress('co',coEff);
+  // Charts
+  updateEffChart(pH,temp,time);
+  updateTempChart(pH,time);
+  // Animate card
+  card.style.transform='scale(1.01)';
+  setTimeout(()=>card.style.transform='',300);
+}
+function setProgress(metal, val){
+  document.getElementById(metal+'-bar').style.width=val+'%';
+  document.getElementById(metal+'-pct').textContent=val.toFixed(1)+'%';
+}
+function liveUpdate(){
+  const pH   = parseFloat(phSlider.value);
+  const temp = parseFloat(tempSlider.value);
+  const time = parseFloat(timeSlider.value);
+  const eff  = calcEff(pH,temp,time);
+  document.getElementById('c-eff').textContent=eff.toFixed(1)+'%';
+}
+
+/* ────── CHARTS ────── */
+const chartOpts = {
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{
+    backgroundColor:'rgba(18,21,28,0.95)',
+    borderColor:'rgba(201,168,76,0.3)',borderWidth:1,
+    titleColor:'#C9A84C',bodyColor:'#A89F8C',
+    padding:10,cornerRadius:8,
+    callbacks:{label:ctx=>' '+ctx.parsed.y.toFixed(1)+'%'}
+  }},
+  scales:{
+    x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#6A6358',font:{family:'Jost',size:11}}},
+    y:{
+      grid:{color:'rgba(255,255,255,0.04)'},
+      ticks:{color:'#6A6358',font:{family:'Jost',size:11},callback:v=>v+'%'},
+      min:0,max:100
+    }
+  }
+};
+let effChart,tempChart;
+function initCharts(){
+  const effCtx = document.getElementById('eff-chart').getContext('2d');
+  effChart = new Chart(effCtx,{
+    type:'line',
+    data:{
+      labels:[1,2,3,4,5,6,7,8,9,10],
+      datasets:[{
+        data:[],fill:true,
+        borderColor:'#C9A84C',borderWidth:2,
+        backgroundColor:'rgba(201,168,76,0.07)',
+        pointBackgroundColor:'#E8D28A',
+        pointRadius:4,pointHoverRadius:7,
+        tension:.4
+      },{
+        data:[],
+        type:'scatter',
+        borderColor:'#fff',
+        backgroundColor:'#C9A84C',
+        pointRadius:8,pointHoverRadius:10,
+        borderWidth:2,
+        label:'Punto actual'
+      }]
+    },
+    options:{...chartOpts,
+      plugins:{...chartOpts.plugins,
+        annotation:{annotations:{}}
+      }
+    }
+  });
+  const tempCtx = document.getElementById('temp-chart').getContext('2d');
+  tempChart = new Chart(tempCtx,{
+    type:'line',
+    data:{
+      labels:[],
+      datasets:[
+        {data:[],fill:true,borderColor:'#4FC3F7',backgroundColor:'rgba(79,195,247,0.07)',
+         borderWidth:2,pointRadius:3,pointHoverRadius:6,tension:.4,label:'Litio (pH<4)'},
+        {data:[],fill:true,borderColor:'#81C784',backgroundColor:'rgba(129,199,132,0.07)',
+         borderWidth:2,pointRadius:3,pointHoverRadius:6,tension:.4,label:'Níquel (pH=5)'},
+        {data:[],fill:true,borderColor:'#EF9A9A',backgroundColor:'rgba(239,154,154,0.07)',
+         borderWidth:2,pointRadius:3,pointHoverRadius:6,tension:.4,label:'Cobalto (pH>6)'}
+      ]
+    },
+    options:{...chartOpts,
+      plugins:{...chartOpts.plugins,
+        legend:{display:true,labels:{color:'#A89F8C',font:{family:'Jost',size:11},boxWidth:12}}
+      }
+    }
+  });
+  updateEffChart(4,60,3);
+  updateTempChart(4,3);
+}
+function updateEffChart(pH,temp,time){
+  const phs=[1,2,3,4,5,6,7,8,9,10];
+  const effs=phs.map(p=>calcEff(p,temp,time));
+  effChart.data.labels=phs;
+  effChart.data.datasets[0].data=effs;
+  effChart.data.datasets[1].data=[{x:pH,y:calcEff(pH,temp,time)}];
+  effChart.update('active');
+}
+function updateTempChart(pH,time){
+  const temps=[];for(let t=20;t<=120;t+=5)temps.push(t);
+  tempChart.data.labels=temps;
+  tempChart.data.datasets[0].data=temps.map(t=>calcEff(2,t,time));
+  tempChart.data.datasets[1].data=temps.map(t=>calcEff(5,t,time));
+  tempChart.data.datasets[2].data=temps.map(t=>calcEff(8,t,time));
+  tempChart.update('active');
+}
+
+/* ────── DIAGRAM TOOLTIPS ────── */
+const tooltip = document.getElementById('tooltip');
+document.querySelectorAll('[data-tip]').forEach(el=>{
+  el.addEventListener('mouseenter',e=>{
+    tooltip.textContent=el.getAttribute('data-tip');
+    tooltip.classList.add('show');
+  });
+  el.addEventListener('mousemove',e=>{
+    tooltip.style.left=(e.clientX+14)+'px';
+    tooltip.style.top=(e.clientY+14)+'px';
+  });
+  el.addEventListener('mouseleave',()=>{
+    tooltip.classList.remove('show');
+  });
+});
+
+/* ────── PHOTO: imagen estática — edita src="diagrama.png" en el HTML ────── */
+
+/* ────── INTERSECTION OBSERVER ────── */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}
+  });
+},{threshold:.08});
+document.querySelectorAll('.section').forEach(s=>io.observe(s));
+
+/* ────── INIT ────── */
+window.addEventListener('load',()=>{
+  initCharts();
+  runSimulation();
+  // Init fill positions
+  const tempPct=((60-20)/(120-20))*100;
+  tempFill.style.width=tempPct+'%';
+  const timePct=((3-0.5)/(10-0.5))*100;
+  timeFill.style.width=timePct+'%';
+});
+</script>
+</body>
+</html>
